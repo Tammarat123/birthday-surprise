@@ -1,239 +1,417 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday!</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24);
-            background-size: 400% 400%;
-            animation: gradientShift 4s ease infinite;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Arial', sans-serif;
-            overflow: hidden;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Special Wish For You</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== เพิ่ม CSS สำหรับปุ่มควบคุมเพลง ===== */
+.music-toggle {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 50px;
+    height: 50px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 2px solid #ff69b4;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    z-index: 1001;
+}
+.music-toggle:hover {
+    transform: scale(1.1);
+}
+.play-icon {
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 14px solid #ff69b4;
+    margin-left: 4px;
+}
+.pause-icon {
+    width: 12px;
+    height: 14px;
+    border-left: 4px solid #ff69b4;
+    border-right: 4px solid #ff69b4;
+    display: none; /* ซ่อนไว้ก่อน */
+}
+.music-toggle.playing .play-icon {
+    display: none;
+}
+.music-toggle.playing .pause-icon {
+    display: block;
+}
+    /* ===== General Setup ===== */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ffe6e6, #ffd6ff, #e6f7ff);
+      background-size: 400% 400%;
+      animation: gradientShift 10s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden; 
+    }
 
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-        .birthday-container {
-            text-align: center;
-            position: relative;
-            z-index: 10;
-        }
+    /* ===== NEW: Envelope Animation ===== */
+    .envelope-container {
+        cursor: pointer;
+        position: relative;
+    }
+    .envelope {
+        position: relative;
+        width: 300px;
+        height: 180px;
+        background-color: #f7e4d5;
+        border-radius: 10px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        transition: all 0.5s 0.3s ease-out;
+    }
+    .envelope-flap {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: #f0d8c0;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        transform-origin: top;
+        transition: transform 0.5s ease-out;
+        clip-path: polygon(0 0, 100% 0, 50% 60%);
+        z-index: 4;
+    }
+    .envelope-front {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: #f7e4d5;
+        border-radius: 10px;
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 50% 60%);
+        z-index: 2;
+    }
+    .envelope-text {
+        position: absolute;
+        top: 55%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        z-index: 3;
+        color: #8c725c;
+        transition: opacity 0.3s ease-out;
+    }
+    .greeting {
+        font-size: 0.9rem;
+        margin: 0;
+    }
+    .name {
+        font-family: 'Dancing Script', cursive;
+        font-size: 2rem;
+        margin: 0;
+        line-height: 1;
+    }
+    .card-inside {
+        position: absolute;
+        background: #fff;
+        width: 90%;
+        height: 85%;
+        left: 5%;
+        top: 5%;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: all 0.5s 0.2s ease-out;
+        z-index: 1;
+    }
+    .click-instruction {
+        color: #555;
+        font-weight: 600;
+        text-align: center;
+        margin-top: 20px;
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+    }
 
-        .birthday-text {
-            font-size: 4rem;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
-            animation: bounce 2s infinite, colorChange 3s infinite;
-            margin-bottom: 30px;
-        }
+    /* Envelope Open State */
+    .envelope-container.open .envelope-flap {
+        transform: rotateX(180deg);
+    }
+    .envelope-container.open .card-inside {
+        transform: translateY(-120px);
+    }
+    .envelope-container.open .envelope {
+        transform: translateY(100px) scale(0.8);
+        opacity: 0;
+    }
+    .envelope-container.open .envelope-text {
+        opacity: 0;
+    }
+    .envelope-container.open .click-instruction {
+        opacity: 0;
+    }
 
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0);
-            }
-            40% {
-                transform: translateY(-20px);
-            }
-            60% {
-                transform: translateY(-10px);
-            }
-        }
+    /* ===== Main Content (Initially Hidden) ===== */
+    #main-content {
+        display: none;
+        opacity: 0;
+        transform: scale(0.8);
+        transition: opacity 0.5s 0.8s ease, transform 0.5s 0.8s ease;
+    }
+    #main-content.visible {
+        display: block;
+        opacity: 1;
+        transform: scale(1);
+    }
 
-        @keyframes colorChange {
-            0% { color: #fff; }
-            25% { color: #ffeb3b; }
-            50% { color: #ff5722; }
-            75% { color: #9c27b0; }
-            100% { color: #fff; }
-        }
+    /* ===== การ์ดอวยพร ===== */
+    .card {
+      position: relative;
+      background: #fff;
+      border-radius: 20px;
+      padding: 60px 80px;
+      width: 480px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      z-index: 10;
+    }
 
-        .cake {
-            font-size: 6rem;
-            animation: rotate 4s linear infinite, pulse 1.5s ease-in-out infinite alternate;
-            margin: 20px 0;
-        }
+    h1 {
+      color: #ff69b4;
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    }
 
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+    p {
+      color: #555;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.1); }
-        }
+    /* ===== ปุ่ม ===== */
+    button {
+      background-color: #ffd700;
+      color: #333;
+      border: none;
+      border-radius: 25px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-        .balloons {
-            position: absolute;
-            top: 10%;
-            left: 10%;
-            font-size: 3rem;
-            animation: float 3s ease-in-out infinite;
-        }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    }
 
-        .balloons:nth-child(2) {
-            top: 15%;
-            right: 15%;
-            left: auto;
-            animation-delay: -1s;
-        }
+    /* ===== รูปมุมทั้งสี่ ===== */
+    .corner-img {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      object-fit: cover;
+      border: 4px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      opacity: 0;
+      animation: fadeIn 1s ease-out forwards, float 6s ease-in-out infinite;
+    }
 
-        .balloons:nth-child(3) {
-            top: 25%;
-            left: 5%;
-            animation-delay: -2s;
-        }
+.top-left { 
+    top: -80px; 
+    left: -260px; 
+    animation-delay: 1.2s, 1.2s; /* ปรับ delay ให้สัมพันธ์กับอนิเมชั่นใหม่ */
+}
+.top-right { 
+    top: -60px; 
+    right: -240px; 
+    animation-delay: 1.5s, 1.5s; 
+}
+.bottom-left { 
+    bottom: -70px; 
+    left: -230px; 
+    animation-delay: 1.8s, 1.8s; 
+}
+.bottom-right { 
+    bottom: -50px; 
+    right: -270px; 
+    animation-delay: 2.1s, 2.1s; 
+}
+    
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8) rotate(var(--rotate-deg, 0deg));
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) rotate(var(--rotate-deg, 0deg));
+    }
+}
+@keyframes float {
+    0% {
+        transform: translateY(0px) rotate(var(--rotate-deg, 0deg));
+    }
+    50% {
+        transform: translateY(-15px) rotate(calc(var(--rotate-deg, 0deg) + 3deg));
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+    }
+    100% {
+        transform: translateY(0px) rotate(var(--rotate-deg, 0deg));
+    }
+}
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(5deg); }
-            50% { transform: translateY(-20px) rotate(-5deg); }
-        }
+    /* ===== Confetti & Modal Pop-up ===== */
+    #confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
+    .confetti { position: absolute; width: 10px; height: 10px; background-color: #f0f; opacity: 0; animation: confetti-fall 5s ease-out forwards; }
+    @keyframes confetti-fall { 0% { transform: translateY(-20vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(120vh) rotate(720deg); opacity: 0; } }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 1000; }
+    .modal-overlay.visible { opacity: 1; pointer-events: auto; }
+    .modal-content { background: #fff; padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transform: scale(0.9); transition: transform 0.3s ease; position: relative; }
+    .modal-overlay.visible .modal-content { transform: scale(1); }
+    .modal-content h2 { color: #ff69b4; font-size: 1.8rem; margin-top: 0; }
+    .modal-content p { font-size: 1.2rem; color: #555; }
+    .close-button { position: absolute; top: 15px; right: 15px; font-size: 1.5rem; color: #aaa; background: none; border: none; cursor: pointer; }
 
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #ff6b6b;
-            animation: confettiFall 3s linear infinite;
-        }
-
-        .confetti:nth-child(odd) {
-            background: #4ecdc4;
-            animation-delay: -0.5s;
-        }
-
-        .confetti:nth-child(3n) {
-            background: #f9ca24;
-            animation-delay: -1s;
-        }
-
-        @keyframes confettiFall {
-            0% {
-                transform: translateY(-100vh) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(720deg);
-                opacity: 0;
-            }
-        }
-
-        .party-message {
-            font-size: 1.5rem;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            animation: fadeInOut 4s ease-in-out infinite;
-            margin-top: 20px;
-        }
-
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 1; }
-        }
-
-        .celebration-btn {
-            background: linear-gradient(45deg, #ff6b6b, #f9ca24);
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            color: white;
-            border-radius: 25px;
-            cursor: pointer;
-            margin-top: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
-        }
-
-        .celebration-btn:hover {
-            transform: scale(1.1);
-        }
-
-        @media (max-width: 768px) {
-            .birthday-text {
-                font-size: 2.5rem;
-            }
-            .cake {
-                font-size: 4rem;
-            }
-            .balloons {
-                font-size: 2rem;
-            }
-        }
-    </style>
+    /* ===== Responsive ===== */
+    @media (max-width: 900px) {
+        .corner-img { display: none; }
+        .card { width: 90%; padding: 40px 20px; }
+    }
+    @media (max-width: 480px) {
+      h1 { font-size: 1.8rem; }
+      p { font-size: 1rem; }
+      .card { padding: 30px; }
+      .modal-content { width: 80%; padding: 25px; }
+      .modal-content h2 { font-size: 1.5rem; }
+      .modal-content p { font-size: 1rem; }
+    }
+  </style>
 </head>
 <body>
-    <!-- Confetti -->
-    <div class="confetti" style="left: 10%; animation-delay: 0s;"></div>
-    <div class="confetti" style="left: 20%; animation-delay: -0.3s;"></div>
-    <div class="confetti" style="left: 30%; animation-delay: -0.6s;"></div>
-    <div class="confetti" style="left: 40%; animation-delay: -0.9s;"></div>
-    <div class="confetti" style="left: 50%; animation-delay: -1.2s;"></div>
-    <div class="confetti" style="left: 60%; animation-delay: -1.5s;"></div>
-    <div class="confetti" style="left: 70%; animation-delay: -1.8s;"></div>
-    <div class="confetti" style="left: 80%; animation-delay: -2.1s;"></div>
-    <div class="confetti" style="left: 90%; animation-delay: -2.4s;"></div>
 
-    <!-- Floating Balloons -->
-    <div class="balloons">🎈</div>
-    <div class="balloons">🎈</div>
-    <div class="balloons">🎈</div>
-
-    <div class="birthday-container">
-        <div class="birthday-text">HAPPY BIRTHDAY!</div>
-        <div class="cake">🎂</div>
-        <div class="party-message">🎉 Wishing you a wonderful day! 🎉</div>
-        <button class="celebration-btn" onclick="celebrate()">🎊 Celebrate! 🎊</button>
+  <div id="envelope-container" class="envelope-container">
+    <div class="envelope">
+        <div class="envelope-flap"></div>
+        <div class="envelope-front"></div>
+        <div class="envelope-text">
+            <p class="greeting">A Special Wish For</p>
+            <p class="name">yxdear</p>
+        </div>
+        <div class="card-inside"></div>
     </div>
+    <p class="click-instruction">ลองเปิดดูสิ</p>
+  </div>
 
-    <script>
-        function celebrate() {
-            // Create more confetti when button is clicked
-            for (let i = 0; i < 20; i++) {
-                createConfetti();
-            }
-            
-            // Play celebration sound (if available)
-            try {
-                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMiBUOZ2fDFfCgDN4HO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMiBUOZ2fDFfCgDN4HO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMiBUOZ2fDFfCgDN4HO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMiBUOZ2fDFfCgDN4HO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMiBUOZ2fDFfCgDN4HO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMiBUOZ2fDFfCgD');
-                audio.play().catch(() => {}); // Ignore errors if audio can't play
-            } catch (e) {}
+
+  <main id="main-content">
+      <div class="card">
+        <h1>🎉 Happy Birthday! 🎂</h1>
+        <p>ขอให้วันนี้เต็มไปด้วยรอยยิ้ม ความสุข และสิ่งดี ๆ ตลอดปี</p>
+        <button onclick="showWish()">กดเพื่อรับคำอวยพรพิเศษ</button>
+      </div>
+        <button id="music-toggle" class="music-toggle">
+          <div class="play-icon"></div>
+          <div class="pause-icon"></div>
+        </button>
+
+      <img src="Kam1.png" alt="Memory 1" class="corner-img top-left" style="--rotate-deg: -8deg;">
+      <img src="Kam2.png" alt="Memory 2" class="corner-img top-right" style="--rotate-deg: 5deg;">
+      <img src="Kam3.png" alt="Memory 3" class="corner-img bottom-left" style="--rotate-deg: -5.5deg;">
+      <img src="Kam4.png" alt="Memory 4" class="corner-img bottom-right" style="--rotate-deg: -3deg;">
+  </main>
+
+  <div id="confetti-container"></div>
+  <div id="wishModal" class="modal-overlay" onclick="closeWish(event)">
+      <div class="modal-content">
+          <button class="close-button" onclick="closeWish({target: document.getElementById('wishModal')})">&times;</button>
+          <h2>คำอวยพรพิเศษ</h2>
+          <p>ขอให้ปีนี้เป็นปีที่ดีที่สุดของคุณ! ✨💖</p>
+      </div>
+  </div>
+
+  <audio id="birthday-audio" loop src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU3LjgyLjEwMAAAAAAAAAAAAAAA//tAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATEFGVzBq//tAwRPAFQRLBABgOKem2/j//tAwQ4Ab2Nj//tAwQ4Ab2NjVzBqVVVVAa222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222-CQ18-09-2025 at 01:54 AM GMT+7"></audio>
+
+  <script>
+    // === INITIALIZATION ===
+    const envelopeContainer = document.getElementById('envelope-container');
+    const mainContent = document.getElementById('main-content');
+    const confettiContainer = document.getElementById('confetti-container');
+    const modal = document.getElementById('wishModal');
+    const audio = document.getElementById('birthday-audio');
+    const musicToggle = document.getElementById('music-toggle');
+
+    // === ENVELOPE LOGIC ===
+    envelopeContainer.addEventListener('click', () => {
+        envelopeContainer.classList.add('open');
+        setTimeout(() => {
+            mainContent.classList.add('visible');
+            envelopeContainer.style.display = 'none';
+        }, 1000);
+    });
+    
+    // === MUSIC LOGIC ===
+    musicToggle.addEventListener('click', () => {
+        if (audio.paused) {
+            audio.volume = 0.4; // ตั้งค่าความดัง
+            audio.play();
+            musicToggle.classList.add('playing');
+        } else {
+            audio.pause();
+            musicToggle.classList.remove('playing');
         }
+    });
 
-        function createConfetti() {
+    // === CARD LOGIC (Confetti and Modal) ===
+    function launchConfetti() {
+        const confettiCount = 100;
+        const colors = ['#ff69b4', '#ffd700', '#87ceeb', '#98fb98', '#dda0dd'];
+        for (let i = 0; i < confettiCount; i++) {
             const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.background = ['#ff6b6b', '#4ecdc4', '#f9ca24', '#45b7d1', '#ff6b6b'][Math.floor(Math.random() * 5)];
-            confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            document.body.appendChild(confetti);
-            
-            // Remove confetti after animation
-            setTimeout(() => {
-                if (confetti.parentNode) {
-                    confetti.parentNode.removeChild(confetti);
-                }
-            }, 5000);
+            confetti.classList.add('confetti');
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.width = Math.random() * 8 + 6 + 'px';
+            confetti.style.height = confetti.style.width;
+            confetti.style.animationDuration = Math.random() * 3 + 4 + 's';
+            confetti.style.animationDelay = Math.random() * 0.2 + 's';
+            confettiContainer.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 7000);
         }
+    }
 
-        // Auto-create confetti periodically
-        setInterval(() => {
-            if (Math.random() > 0.7) {
-                createConfetti();
-            }
-        }, 500);
-    </script>
+    function showWish() {
+        launchConfetti();
+        setTimeout(() => modal.classList.add('visible'), 300);
+    }
+
+    function closeWish(event) {
+        if (event.target.id === 'wishModal' || event.target.classList.contains('close-button')) {
+            modal.classList.remove('visible');
+        }
+    }
+  </script>
 </body>
 </html>
